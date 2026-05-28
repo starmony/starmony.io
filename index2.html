@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Starmony | Music Creation Platform</title>
+  <meta name="description" content="Starmony is a music creation platform built around voice, AI-assisted songwriting, producer sound, and a vision for making original songs in minutes.">
+  <link rel="icon" href="assets/app-icon.png" type="image/png">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101011;
+      --bg-deep: #080809;
+      --ink: #ffffff;
+      --muted: #d6d4cf;
+      --soft: #aaa7a0;
+      --line: rgba(255, 255, 255, 0.16);
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-strong: rgba(255, 255, 255, 0.1);
+      --accent: #ff0a58;
+      --violet: #2e1780;
+      --purple: #5d3dab;
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg-deep);
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(8, 8, 9, 0) 0%, rgba(16, 16, 17, 0.82) 24%, #101011 100%),
+        var(--bg);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::selection {
+      background: var(--accent);
+      color: var(--ink);
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-color: rgba(255, 10, 88, 0.78);
+      text-underline-offset: 4px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      letter-spacing: 0;
+    }
+
+    .shell {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(8, 8, 9, 0.84);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar .shell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      text-decoration: none;
+    }
+
+    .brand img {
+      width: 148px;
+      height: auto;
+      flex: 0 0 auto;
+    }
+
+    .brand span {
+      color: var(--soft);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1;
+      padding: 9px 11px;
+      text-decoration: none;
+    }
+
+    .nav a:hover {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+    }
+
+    .hero {
+      position: relative;
+      min-height: clamp(540px, 72svh, 760px);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-deep);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(8, 8, 9, 0.96) 0%, rgba(8, 8, 9, 0.78) 42%, rgba(8, 8, 9, 0.16) 78%, rgba(8, 8, 9, 0.64) 100%),
+        linear-gradient(180deg, rgba(46, 23, 128, 0.18) 0%, rgba(255, 10, 88, 0.12) 54%, rgba(8, 8, 9, 0.92) 100%);
+      z-index: 1;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: right center;
+      opacity: 0.88;
+      transform: translateX(8%);
+      filter: saturate(1.08);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: min(720px, 100%);
+      padding: 72px 0 80px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.065);
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 8px 12px;
+    }
+
+    .status::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(255, 10, 88, 0.18);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: clamp(4.25rem, 12vw, 8.6rem);
+      line-height: 0.88;
+      max-width: 720px;
+    }
+
+    .hero-kicker {
+      max-width: 700px;
+      margin-bottom: 16px;
+      color: var(--ink);
+      font-size: clamp(1.65rem, 4vw, 3.4rem);
+      font-weight: 840;
+      line-height: 1.02;
+    }
+
+    .lead {
+      max-width: 620px;
+      margin-bottom: 30px;
+      color: var(--muted);
+      font-size: 1.14rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--ink);
+      font-weight: 800;
+      line-height: 1;
+      padding: 13px 18px;
+      text-decoration: none;
+    }
+
+    .button:hover {
+      background: #ee7095;
+    }
+
+    .text-link {
+      color: var(--muted);
+      font-weight: 760;
+    }
+
+    section {
+      padding: 68px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(280px, 0.58fr);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 13px;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-size: clamp(2rem, 4vw, 3.65rem);
+      line-height: 0.98;
+      max-width: 780px;
+    }
+
+    .section-head p,
+    .section-copy {
+      color: var(--muted);
+    }
+
+    .section-head p {
+      margin-bottom: 5px;
+      max-width: 430px;
+    }
+
+    .notice-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr 0.9fr;
+      gap: 1px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--line);
+    }
+
+    .notice {
+      min-height: 180px;
+      background: rgba(16, 16, 17, 0.92);
+      padding: 24px;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 1.18rem;
+      line-height: 1.2;
+    }
+
+    .notice p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .notice.primary {
+      background:
+        linear-gradient(135deg, rgba(46, 23, 128, 0.9), rgba(255, 10, 88, 0.33)),
+        rgba(16, 16, 17, 0.94);
+    }
+
+    .feature-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .phone-frame {
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(46, 23, 128, 0.34), rgba(8, 8, 9, 0.16)),
+        #17151d;
+      box-shadow: var(--shadow);
+    }
+
+    .phone-frame img {
+      width: 100%;
+      height: min(640px, 74svh);
+      min-height: 470px;
+      object-fit: contain;
+      object-position: center bottom;
+      padding: 24px 24px 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature {
+      min-height: 214px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 22px;
+    }
+
+    .feature img {
+      width: 54px;
+      height: 54px;
+      margin-bottom: 18px;
+      object-fit: contain;
+    }
+
+    .feature h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      line-height: 1.16;
+    }
+
+    .feature p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .archive-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .wide-image {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #050505;
+      min-height: 320px;
+      box-shadow: var(--shadow);
+    }
+
+    .wide-image img {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .archive-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .archive-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 20px;
+    }
+
+    .archive-item h3 {
+      margin-bottom: 8px;
+      font-size: 1.12rem;
+      line-height: 1.2;
+    }
+
+    .archive-item p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .quote-band {
+      padding: 86px 0;
+      background:
+        linear-gradient(100deg, rgba(46, 23, 128, 0.72), rgba(255, 10, 88, 0.18) 50%, rgba(93, 61, 171, 0.24)),
+        #15121f;
+    }
+
+    .quote-band blockquote {
+      margin: 0;
+      max-width: 980px;
+      color: var(--ink);
+      font-size: clamp(2rem, 5vw, 5rem);
+      font-weight: 860;
+      line-height: 0.98;
+    }
+
+    .quote-band p {
+      max-width: 620px;
+      margin: 24px 0 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 1.08rem;
+    }
+
+    .contact {
+      padding-bottom: 82px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(290px, 0.42fr);
+      gap: 34px;
+      align-items: start;
+    }
+
+    .contact-copy {
+      max-width: 700px;
+    }
+
+    .contact-copy p {
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .address {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-strong);
+      padding: 22px;
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    .address strong {
+      color: var(--ink);
+    }
+
+    .address p:last-child {
+      margin-bottom: 0;
+    }
+
+    footer {
+      padding: 28px 0 42px;
+      color: var(--soft);
+      font-size: 0.92rem;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-row img {
+      width: 118px;
+      opacity: 0.86;
+    }
+
+    @media (max-width: 930px) {
+      .topbar {
+        position: relative;
+      }
+
+      .topbar .shell {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 15px 0;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        min-height: 700px;
+        align-items: end;
+      }
+
+      .hero::before {
+        background:
+          linear-gradient(180deg, rgba(8, 8, 9, 0.14) 0%, rgba(8, 8, 9, 0.64) 38%, rgba(8, 8, 9, 0.98) 100%),
+          linear-gradient(90deg, rgba(46, 23, 128, 0.28), rgba(255, 10, 88, 0.14));
+      }
+
+      .hero-media img {
+        height: 58%;
+        object-position: center top;
+        transform: translateX(0);
+      }
+
+      .hero-content {
+        padding-top: 300px;
+      }
+
+      .section-head,
+      .feature-layout,
+      .archive-strip,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .notice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .notice {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        font-size: 15px;
+      }
+
+      .shell {
+        width: min(100% - 28px, 1160px);
+      }
+
+      .brand {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .brand span {
+        white-space: normal;
+      }
+
+      .nav {
+        gap: 4px;
+      }
+
+      .nav a {
+        font-size: 0.82rem;
+        padding: 8px 9px;
+      }
+
+      .hero {
+        min-height: 660px;
+      }
+
+      .hero-content {
+        padding: 270px 0 54px;
+      }
+
+      .status {
+        align-items: flex-start;
+        border-radius: 8px;
+        line-height: 1.25;
+      }
+
+      h1 {
+        font-size: clamp(3.7rem, 20vw, 5.4rem);
+      }
+
+      .hero-kicker {
+        font-size: 1.78rem;
+      }
+
+      .lead {
+        font-size: 1.02rem;
+      }
+
+      section {
+        padding: 52px 0;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature {
+        min-height: 0;
+      }
+
+      .phone-frame img {
+        height: auto;
+        min-height: 0;
+        padding: 18px 14px 0;
+      }
+
+      .wide-image,
+      .wide-image img {
+        min-height: 230px;
+      }
+
+      .quote-band {
+        padding: 64px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <a class="brand" href="#top" aria-label="Starmony home">
+        <img src="assets/logo.png" alt="Starmony">
+        <span>Music creation platform</span>
+      </a>
+      <nav class="nav" aria-label="Page sections">
+        <a href="#vision">Vision</a>
+        <a href="#made">What we build</a>
+        <a href="#ecosystem">Ecosystem</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="Starmony">
+      <div class="hero-media" aria-hidden="true">
+        <img src="assets/hero-app.webp" alt="">
+      </div>
+      <div class="shell">
+        <div class="hero-content">
+          <p class="status">Music creation for everyone</p>
+          <h1>Starmony</h1>
+          <p class="hero-kicker">Make music anytime, anywhere.</p>
+          <p class="lead">Starmony is built on a simple idea: turn a voice, a story, or a melody into an original song in minutes. We bring music intelligence, creator tools, producer craft, and community energy together into one music-making vision.</p>
+          <div class="hero-actions">
+            <a class="button" href="mailto:hello@starmony.io">Contact Starmony</a>
+            <a class="text-link" href="#made">Explore the vision</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vision">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Vision</span>
+            <h2>A faster, more human way to create songs.</h2>
+          </div>
+          <p>Starmony imagines music creation as something immediate, expressive, and open to anyone with an idea.</p>
+        </div>
+
+        <div class="notice-grid">
+          <article class="notice primary">
+            <strong>Original songs in minutes.</strong>
+            <p>Start with a voice note, lyric, melody, mood, or story and move quickly toward a track that feels personal.</p>
+          </article>
+          <article class="notice">
+            <strong>Next-gen music creation.</strong>
+            <p>Make music anytime, anywhere. Start with your voice. Get an original song in seconds. Share the result.</p>
+          </article>
+          <article class="notice">
+            <strong>Open to new conversations.</strong>
+            <p>For partnerships, or inquiries, reach us at hello@starmony.io.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="made">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">What we build</span>
+            <h2>Mobile-first tools for fast, expressive song creation.</h2>
+          </div>
+          <p>Starmony brings AI-assisted music, creator voices, high-quality producer sounds, and an artist community into one platform.</p>
+        </div>
+
+        <div class="feature-layout">
+          <figure class="phone-frame">
+            <img src="assets/voices-screens.png" alt="Starmony Voices product screens">
+          </figure>
+          <div class="feature-grid">
+            <article class="feature">
+              <img src="assets/icon-voice.webp" alt="">
+              <h3>Create with your voice</h3>
+              <p>Sing, rap, hum, or speak an idea and use it as the spark for a complete song.</p>
+            </article>
+            <article class="feature">
+              <img src="assets/icon-production.webp" alt="">
+              <h3>Add professional production</h3>
+              <p>Combine creator ideas with polished sound, beats, arrangements, and music intelligence.</p>
+            </article>
+            <article class="feature">
+              <img src="assets/ai-song.png" alt="">
+              <h3>Turn stories into songs</h3>
+              <p>AI Song shows how prompts, moods, moments, and themes can become music quickly.</p>
+            </article>
+            <article class="feature">
+              <img src="assets/icon-share.png" alt="">
+              <h3>Share the result</h3>
+              <p>Go from idea to song in minutes and share it on global music streaming services.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ecosystem">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Ecosystem</span>
+            <h2>Creators, artists, and high-quality music productions.</h2>
+          </div>
+          <p>Starmony celebrates the people making music, from first-time creators to producers, artists, singers, rappers, and storytellers.</p>
+        </div>
+
+        <div class="archive-strip">
+          <div class="wide-image">
+            <img src="assets/artists-catalogue.webp" alt="A catalogue of songs and artists created with Starmony">
+          </div>
+          <div class="archive-list">
+            <article class="archive-item">
+              <h3>Starmony Voices</h3>
+              <p>A creative space for voice collaboration, harmonies, vocal effects, and full-song experiments.</p>
+            </article>
+            <article class="archive-item">
+              <h3>Artists</h3>
+              <p>A phone-based studio for singers, rappers, and storytellers who quickly wants to move from idea to a finished track.</p>
+            </article>
+            <article class="archive-item">
+              <h3>Music producers</h3>
+              <p>A way for producers to share their music productions with a global network of creators.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote-band" aria-label="Starmony mission statement">
+      <div class="shell">
+        <blockquote>Make music anytime, anywhere.</blockquote>
+        <p>Original songs in minutes, music-making without a traditional studio, and a community built around creativity.</p>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="shell contact-grid">
+        <div class="contact-copy">
+          <span class="eyebrow">Contact</span>
+          <h2>Partnerships and inquiries.</h2>
+          <p>For partnerships, company administration, or conversations about the future of Starmony - reach out!</p>
+          <a class="button" href="mailto:hello@starmony.io">hello@starmony.io</a>
+        </div>
+        <address class="address">
+          <p><strong>Starmony AB</strong><br>Kivra: 559224-8123<br>106 31 Stockholm<br>Sweden</p>
+        </address>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-row">
+      <img src="assets/logo.png" alt="Starmony">
+      <span>Copyright &copy; 2026, Starmony AB.</span>
+    </div>
+  </footer>
+</body>
+</html>
